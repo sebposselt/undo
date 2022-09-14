@@ -38,7 +38,7 @@ object Application {
         case Some( lst ) =>
           (lst(0), steps - lst)
         case None =>
-          "this will never happen as I know find() will succeed"
+          ("this will never happen as I know find() will succeed", Set())
       }
       findChain(steps2, startWord, previous, previous::acc)
     }
