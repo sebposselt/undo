@@ -1,0 +1,51 @@
+
+
+
+word chainer naiv:
+
+
+def f currentword:lst endword acc:lst =
+  lst = Onestep(currentword.fst) // create list of words that can be reach with one step from x.
+  if endword in lst:
+    return list.reverse( endword::(currentword.fst)::acc )
+  else
+    f startword.tail endword currentword.fst::acc
+
+
+f [cat] dog []
+
+  
+
+
+flipLetter word flipIdx =
+  alphabet = [a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z]
+  lst = List.map ( letter => (word[flipIdx] == letter) ? word : word[flipIdx] = letter ) alphabet
+  lst' = List.filter (w => w != word) lst
+  return List.filter (w => w in Dictionary) lst'
+
+Onestep(word) =
+  idxs = [0...len(word)]
+  l = List.map (flipLetter word) idxs
+  return List.flatten l
+
+
+improve by making Onestep smater. if a input word shares correctly placed letters with the end word, those letters are not tried to flip.
+
+
+//smarter
+
+
+Onestep' word endword =
+  idxs = [0...len(word)]
+  idxs' = List.filter (i => word[i] != endword[i]) idxs
+  l = List.map (flipLetter word endword) idxs'
+  return List.flatten l  
+
+
+
+
+
+
+
+
+
