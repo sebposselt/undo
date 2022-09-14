@@ -3,22 +3,27 @@ import scala.io.Source
 object Application {
   def main(args: Array[String]): Unit = {
 
-    val startWord:String = args(0)
-    val endWord:String = args(1)
-    // list of words is taken from http://www.gwicks.net/dictionaries.htm
-    val dictionaryPath = "resources/english3.txt"
-
-    if (startWord.length != endWord.length){
-      println("start word and end word must be same length")
+    if (args.size != 2) {
+      println("please provide a start word and an end word to the application")
     }
     else {
-      // implicit workDict is to avoid threading the workDict through every auxilery function call.
-      implicit val workDict:List[String] = createworkDict(dictionaryPath, startWord.length()) //set is not the matmatical meaning
-      val res = wordChain(Set(startWord), endWord, Set(), workDict)
-      val chain = findChain(res,startWord,endWord,List(endWord))
-
-      println(s"\ndone!\nThe length of the chain is: ${chain.length}\nThe chain is:\n")
-      for {s <- chain} println(s)
+      val startWord:String = args(0)
+      val endWord:String = args(1)
+      // list of words is taken from http://www.gwicks.net/dictionaries.htm
+      val dictionaryPath = "resources/english3.txt"
+  
+      if (startWord.length != endWord.length){
+        println("start word and end word must be same length")
+      }
+      else {
+        // implicit workDict is to avoid threading the workDict through every auxilery function call.
+        implicit val workDict:List[String] = createworkDict(dictionaryPath, startWord.length()) //set is not the matmatical meaning
+        val res = wordChain(Set(startWord), endWord, Set(), workDict)
+        val chain = findChain(res,startWord,endWord,List(endWord))
+  
+        println(s"\ndone!\nThe length of the chain is: ${chain.length}\nThe chain is:\n")
+        for {s <- chain} println(s)
+      }
     }
   }
 
