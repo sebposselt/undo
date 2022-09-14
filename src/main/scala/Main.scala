@@ -43,35 +43,6 @@ object Application {
     }
   }
 
-
-  // def wordChain ( wordQueue:Set[String],
-  //                 prevStep:String,
-  //                 endWord:String,
-  //                 acc:List[List[String]],
-  //                 workDict:List[String]): List[List[String]] = {
-  //   val w = wordQueue.head
-  //   val newAcc = List(prevStep, w) :: acc
-  //   // val nextWords = oneStepSmart((w), endWord, workDict).toSet
-  //   // val nextWords = oneStep((w), workDict).toSet
-
-
-  //   // println()
-  //   // println(s"new call. head: ${w}")
-  //   // println(s"newAcc: ${newAcc}")
-  //   // println(s"tail: ${wordQueue.tail}")
-  //   // println(s"newSteps: ${nextWords}")
-  //   // println()
-  //   if (nextWords.contains(endWord)){
-  //     List(w,endWord) :: newAcc
-  //   }
-  //   else {
-  //     // val newCurWords = ((nextWords - (w)) union wordQueue.tail)  //important to remove already tried steps as it can otherwise flip the same letter back and forth
-  //     val newCurWords = (nextWords union wordQueue.tail) -- newAcc.flatten.toSet  //important to remove already tried steps as it can otherwise flip the same letter back and forth
-  //     wordChain(newCurWords, w, endWord, newAcc, workDict)
-
-  //   }
-  // }
-
   def wordChain(wordQueue:Set[String],
                 endWord:String,
                 acc:Set[List[String]],
@@ -89,15 +60,12 @@ object Application {
         case None =>
           "this will never happen due to the if"
       }
-      
       newAcc + List(y,endWord)
     }
     else {
       wordChain(nextWords, endWord, newAcc, workDict)
     }
   }
-
-
 
   def flipLetter (word:String, flipIdx:Int, workDict:List[String]) :List[String] = {
     val alphabet = List('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z')
@@ -111,7 +79,6 @@ object Application {
     val idxs:List[Int] = (for {i <- 0 to word.length -1 } yield i).toList
     idxs.flatMap(flipLetter(word, _, workDict))
   }
-
 
   // if one char is correctly placed in word it will not try to flip it. this is greedy and the problem may not always be solvable by a greedy solution
   def oneStepSmart(word:String, endWord:String, workDict:List[String]) :List[String] = {
@@ -127,15 +94,3 @@ object Application {
   }
 
 }
-
-
-
-
-
-/*    NOTES:
-Im trying to do a BFS, but its important to improve speed and complexity
-that the set of next words to take a step from does not contain dulicate
-and previous steps as this would essentially create a cycle in the search
-tree and can cause an infinite loop
-
-*/
