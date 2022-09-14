@@ -18,7 +18,6 @@ object Application {
       implicit val workDict:List[String] = createworkDict(dictionaryPath, startWord.length()) //set is not the matmatical meaning
 
       val res = wordChain(Set(startWord), endWord, Set(), workDict)
-      println("steps done")
       val chain = findChain(res,startWord,endWord,List(endWord))
 
       println(s"\ndone!\nThe length of the chain is: ${chain.length}\nThe chain is:\n")
@@ -32,12 +31,11 @@ object Application {
     }
     else {
       val step = steps.find(l => l(1) == endWord)
-      println(step)
-      val (steps2,previous) = step match {
+      val (previous, steps2) = step match {
         case Some( lst ) =>
-          (steps - lst, lst(0))
+          (lst(0), steps - lst)
         case None =>
-          "this will never happen as I know find succedes"
+          "this will never happen as I know find() will succeed"
       }
       findChain(steps2, startWord, previous, previous::acc)
     }
