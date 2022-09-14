@@ -12,17 +12,11 @@ object Application {
       println("start word and end word must be same length")
     }
     else {
-      // implicit workDict is to avoid threading the workDict through every subsequent function call. essentially creating a state monad
+      // implicit workDict is to avoid threading the workDict through every auxilery function call.
       implicit val workDict:List[String] = createworkDict(dictionaryPath, startWord.length()) //set is not the matmatical meaning
-
       val res = wordChain(Set(startWord), endWord, Set(), workDict)
-
-      // test
-      println(s"Res has a step with cot: ${res.flatten.contains("cot")}")
-      println(s"Res has a step with cog: ${res.flatten.contains("cog")}")      
       val chain = findChain(res,startWord,endWord,List(endWord))
 
-      println(s"Number of steps in res: ${res.size}")
       println(s"\ndone!\nThe length of the chain is: ${chain.length}\nThe chain is:\n")
       for {s <- chain} println(s)
     }
@@ -47,15 +41,17 @@ object Application {
   def wordChain(wordQueue:Set[String],
                 endWord:String,
                 acc:Set[List[String]],
-                workDict:List[String]): Set[List[String]] = {
-    println(s"size of wordqueue: ${wordQueue.size}")               
+                workDict:List[String]): Set[List[String]] = {            
+    // find all possible steps from every word in wordqueue
     val tmp = wordQueue.map( w => (w, oneStep(w,workDict)))
     // add the the steps to the accumulator
     val additionsToAcc = tmp.flatMap( (s,l) => l.map( s2 => List(s,s2) ) )
     val newAcc = acc ++ additionsToAcc
     
+    // select the new possible steps
     val nextWords = (tmp.flatMap(tup => tup._2) )
     
+    // base case
     if (nextWords.contains(endWord)){
       val x = tmp.find( (s,l) => l.contains(endWord))
       val y = x match {
@@ -66,12 +62,14 @@ object Application {
       }
       newAcc + List(y,endWord)
     }
+    // recursive case
     else {
       wordChain(nextWords -- acc.flatten, endWord, newAcc, workDict)
     }
   }
 
-  def flipLetter (word:String, flipIdx:Int, workDict:List[String]) :List[String] = {
+  // aux-function to flip a single letter of a word to all possibilities and check that it yields an actual word
+  def flipLetters (word:String, flipIdx:Int, workDict:List[String]) :List[String] = {
     val alphabet = List('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z')
     val flipChar = (w:String, i:Int, c:Char) => w.substring(0,i) + c + w.substring(i+1)
     val f = (c:Char) => if (c == word(flipIdx)) word else flipChar(word, flipIdx, c)
@@ -79,16 +77,10 @@ object Application {
     lst.filter((w:String) => w != word && workDict.contains(w) )
   }
 
+  // calcualte all possible steps form a given word
   def oneStep(word:String, workDict:List[String]) :List[String] = {
     val idxs:List[Int] = (for {i <- 0 to word.length -1 } yield i).toList
-    idxs.flatMap(flipLetter(word, _, workDict))
-  }
-
-  // if one char is correctly placed in word it will not try to flip it. this is greedy and the problem may not always be solvable by a greedy solution
-  def oneStepSmart(word:String, endWord:String, workDict:List[String]) :List[String] = {
-    val idxs:List[Int] = (for {i <- 0 to word.length -1 } yield i).toList
-    val indx2:List[Int] = idxs.filter( i => word(i) != endWord(i) )
-    indx2.flatMap(flipLetter(word, _, workDict))
+    idxs.flatMap(flipLetters(word, _, workDict))
   }
 
   // function to trim the dictionary to relevent words in efforts to speed up lookups.
