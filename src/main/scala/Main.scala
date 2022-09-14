@@ -3,10 +3,8 @@ import scala.io.Source
 object Application {
   def main(args: Array[String]): Unit = {
 
-    // val startWord:String = args(0)
-    // val endWord:String = args(0)
-    val startWord:String = "cat"
-    val endWord:String = "dog"
+    val startWord:String = args(0)
+    val endWord:String = args(1)
     // list of words is taken from http://www.gwicks.net/dictionaries.htm
     val dictionaryPath = "resources/english3.txt"
 
@@ -18,8 +16,13 @@ object Application {
       implicit val workDict:List[String] = createworkDict(dictionaryPath, startWord.length()) //set is not the matmatical meaning
 
       val res = wordChain(Set(startWord), endWord, Set(), workDict)
+
+      // test
+      println(s"Res has a step with cot: ${res.flatten.contains("cot")}")
+      println(s"Res has a step with cog: ${res.flatten.contains("cog")}")      
       val chain = findChain(res,startWord,endWord,List(endWord))
 
+      println(s"Number of steps in res: ${res.size}")
       println(s"\ndone!\nThe length of the chain is: ${chain.length}\nThe chain is:\n")
       for {s <- chain} println(s)
     }
@@ -45,10 +48,13 @@ object Application {
                 endWord:String,
                 acc:Set[List[String]],
                 workDict:List[String]): Set[List[String]] = {
+    println(s"size of wordqueue: ${wordQueue.size}")               
     val tmp = wordQueue.map( w => (w, oneStep(w,workDict)))
+    // add the the steps to the accumulator
     val additionsToAcc = tmp.flatMap( (s,l) => l.map( s2 => List(s,s2) ) )
     val newAcc = acc ++ additionsToAcc
-    val nextWords = tmp.flatMap(tup => tup._2) 
+    
+    val nextWords = (tmp.flatMap(tup => tup._2) )
     
     if (nextWords.contains(endWord)){
       val x = tmp.find( (s,l) => l.contains(endWord))
@@ -61,7 +67,7 @@ object Application {
       newAcc + List(y,endWord)
     }
     else {
-      wordChain(nextWords, endWord, newAcc, workDict)
+      wordChain(nextWords -- acc.flatten, endWord, newAcc, workDict)
     }
   }
 
